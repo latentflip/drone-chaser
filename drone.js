@@ -2,12 +2,11 @@ var arDrone = require('ar-drone');
 var client = arDrone.createClient();
 var Bacon = require('baconjs')
 
-
-
-
-var round = function(n, dp) {
-  return parseFloat(n.toFixed(dp))
-};
+var u = {
+  round: function(n, dp) {
+    return parseFloat(n.toFixed(dp))
+  }
+}
 
 var _positionBus = new Bacon.Bus()
 var _depthBus = new Bacon.Bus()
@@ -30,6 +29,12 @@ _depthBus.throttle(50).onValue(function(dist) {
   }, 100)
 })
 
+var startupTimer = setTimeout(function(){
+  client.stop()
+  client.land()
+}, 5000)
+
+
 
 positionBus = _positionBus.map(function(pos) {
   return {
@@ -50,6 +55,7 @@ var shutdown, nospin;
 
 
 xError.onValue(function(errX) {
+  clearTimeout(startupTimer)
   if (errX > 0) {
     console.log('Counter', errX)
     client.counterClockwise(3*errX)
@@ -80,6 +86,7 @@ client.config('detect:enemy_without_shell','0')
 client.config('general:navdata_demo', 'FALSE')
 
 client.takeoff();
+
 
 client.on('navdata', function(data) {
   if (data.droneState.lowBattery === 1) {
