@@ -38,8 +38,8 @@ var startupTimer = setTimeout(function(){
 
 positionBus = _positionBus.map(function(pos) {
   return {
-    x: round(0.5 - pos.x, 4),
-    y: round(0.5 - pos.y, 4)
+    x: u.round(0.5 - pos.x, 4),
+    y: u.round(0.5 - pos.y, 4)
   }
 }).throttle(100)
 
